@@ -1,0 +1,16 @@
+direct_net_gateway_ip: "10.129.4.129"
+ext_net_gateway_ip: "183.23.53.1"
+direct_net_network: "10.129.5.128/28"
+ext_net_network: "183.23.53.0/24"
+
+
+public_subnets:
+  - { "az1-pub-net-01": "10.169.0.0/23" }
+  - { "az2-pub-net-02": "10.169.2.0/23" }
+  - { "az3-pub-net-03": "10.169.4.0/23" }
+
+
+private_subnets:
+  - { "az1-priv-net-01": "10.169.8.0/23" }
+  - { "az2-priv-net-02": "10.169.10.0/23" }
+  - { "az3-priv-net-03": "10.169.12.0/23" }
