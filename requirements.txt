@@ -1,0 +1,5 @@
+keystoneauth1==2.4.0
+python-keystoneclient==2.3.1
+python-neutronclient==4.1.2
+ansible==2.0.0
+shade==1.7.0

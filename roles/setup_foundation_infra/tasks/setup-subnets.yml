@@ -1,0 +1,13 @@
+---
+# Blah Blah copyright
+# blah blah no warranty
+# blah blah apache license
+
+- name: Create public subnets
+  os_network:
+    state: present
+    name: "{{ item.net_name }}"
+    external: true
+  with_items: public_subnets
+    
+    
