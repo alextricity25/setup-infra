@@ -1,0 +1,24 @@
+---
+
+- name: Delete public subnets
+  os_subnet:
+    state: absent
+    network_name: "{{ item.net_name }}"
+    name: "{{ item.subnet_name }}"
+    cidr: "{{ item.cidr }}"
+    dns_nameservers: "{{ dns_servers }}"
+    host_routes:
+      - destination: 0.0.0.0/0
+        nexthop: "{{ item.internet_router_gateway_ip }}"
+      - destination: 10.0.0.0/8
+        nexthop: "{{ item.internal_router_gateway_ip }}"
+  with_items: "{{ public_subnets }}"
+    
+- name: Delete public networks
+  os_network:
+    state: absent
+    name: "{{ item.net_name }}"
+    external: true
+  with_items: "{{ public_subnets }}"
+    
+    

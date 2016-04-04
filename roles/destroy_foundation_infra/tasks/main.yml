@@ -1,0 +1,4 @@
+---
+
+- include: destroy-routers.yml
+- include: destroy-subnets.yml

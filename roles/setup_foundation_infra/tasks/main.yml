@@ -1,3 +1,4 @@
 ---
 
 - include: setup-subnets.yml
+- include: setup-routers.yml
