@@ -1,8 +1,4 @@
 ---
-# Blah Blah copyright
-# blah blah no warranty
-# blah blah apache license
-
 - name: Create public subnets
   os_network:
     state: present
