@@ -16,8 +16,6 @@
     host_routes:
       - destination: 0.0.0.0/0
         nexthop: "{{ item.internet_router_gateway_ip }}"
-      - destination: 10.0.0.0/8
-        nexthop: "{{ item.internal_router_gateway_ip }}"
     allocation_pool_start: "{{ item.allocation_pool_start }}"
     allocation_pool_end: "{{ item.allocation_pool_end }}"
   with_items: "{{ public_subnets }}"

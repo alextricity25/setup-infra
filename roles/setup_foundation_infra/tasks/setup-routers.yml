@@ -48,6 +48,7 @@
     name: internal_router
     state: present
     network: "{{ direct_network.name }}"
+    enable_snat: "False"
     external_fixed_ips:
       - subnet: "{{ direct_network.subnet_name }}"
         ip: "{{ direct_network.internal_router_ip }}"
@@ -68,3 +69,7 @@
 
 - name: Add interface from no mans net to internal router
   shell: "neutron router-interface-add internal_router port={{ no_mans_port_results.id }} || true"
+
+- name: Update static routes on internet router
+  shell: "neutron router-update --route destination={{ item.destination }},nexthop={{ item.nexthop }} internet_router"
+  with_items: "{{ internet_router_routes }}"
