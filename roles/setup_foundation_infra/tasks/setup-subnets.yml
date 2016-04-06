@@ -22,5 +22,22 @@
     allocation_pool_end: "{{ item.allocation_pool_end }}"
   with_items: "{{ public_subnets }}"
     
+# No mans net is so the two routers can communicate to each other.
+# Ultimately there will be a route on the internal router that will
+# route internet traffic comming from VMs attached to the private subnets
+# to the internet router. No VMS should be attached to this network. Ever.
+- name: Create no-mans-net
+  os_network:
+    state: present
+    name: "{{ no_mans_net.net_name }}"
+    external: false
+
+- name: Create no_mans_subnet
+  os_subnet:
+    state: present
+    network_name: "{{ no_mans_net.net_name }}"
+    name: "{{ no_mans_net.subnet_name }}"
+    cidr: "{{ no_mans_net.cidr }}"
+    enable_dhcp: false
     
-    
+  

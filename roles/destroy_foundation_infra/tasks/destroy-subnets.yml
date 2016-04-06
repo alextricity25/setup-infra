@@ -21,4 +21,14 @@
     external: true
   with_items: "{{ public_subnets }}"
     
-    
+- name: Delete no mans subnet
+  os_subnet:
+    state: absent
+    network_name: "{{ no_mans_net.net_name }}"
+    name: "{{ no_mans_net.subnet_name }}"
+    cidr: "{{ no_mans_net.cidr }}"
+
+- name: Delete no mans net
+  os_network:
+    state: absent
+    name: "{{ no_mans_net.net_name }}"

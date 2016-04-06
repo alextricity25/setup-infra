@@ -11,14 +11,38 @@
 #- name: Debug interfaces list
 #  debug: var=interfaces
 
+
+
+- name: Delete internal router interfaces
+  shell: "neutron router-interface-delete internal_router port={{ item.subnet_name }}_port || true"
+  with_items: "{{ public_subnets }}"
+
+- name: Delete no mans net internal router interface
+  shell: "neutron router-interface-delete internal_router port={{ no_mans_net.subnet_name }}_port || true"
+  
+- name: Delete check files in /tmp
+  shell: "rm -rf /tmp/neutron-router-interface-add-* || true"
+
 - name: Delete Internet Router
   os_router:
     name: internet_router
     state: absent
-    #network: "{{ external_network_name }}"
-   # external_fixed_ips: "{{ internet_router_external_fixed_ips }}"
-    #interfaces: "{{ interfaces }}"
+
+- name: Delete ports
+  os_port:
+    state: absent
+    name: "{{ item.subnet_name }}_port"
+    network: "{{ item.subnet_name }}"
+  with_items: "{{ public_subnets }}"
+
+- name: Delete no mans net port
+  os_port:
+    state: absent
+    name: "{{ no_mans_net.subnet_name}}_port"
+    network: "{{ no_mans_net.subnet_name }}"
+
 - name: Delete Internal Router
   os_router:
     name: internal_router
     state: absent
+

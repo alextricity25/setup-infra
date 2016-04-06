@@ -4,24 +4,67 @@
   with_items: "{{ public_subnets }}"
   register: interfaces_result
 
-
 - name: Make interfaces list
   set_fact: interfaces={{ interfaces_result.results | map(attribute='ansible_facts.interfaces_fact') | list }}
-  
-#- name: Debug interfaces list
-#  debug: var=interfaces
+ 
+- name: Set fact for no mans net list
+  set_fact: no_mans_net_list={{ no_mans_net.subnet_name.split() }}
 
 - name: Create Internet Router
   os_router:
     name: internet_router
     state: present
-    network: "{{ external_network_name }}"
-   # external_fixed_ips: "{{ internet_router_external_fixed_ips }}"
-    interfaces: "{{ interfaces }}"
+    network: "{{ external_network.name }}"
+    external_fixed_ips:
+      - subnet: "{{ external_network.subnet_name }}"
+        ip: "{{ external_network.internet_router_ip }}"
+    interfaces: "{{ interfaces + no_mans_net_list }}"
 
+- name: Create ports for the interfaces connected to internal router
+  os_port:
+    state: present
+    name: "{{ item.subnet_name }}_port"
+    network: "{{ item.net_name }}"
+    fixed_ips:
+      - ip_address: "{{ item.internal_router_gateway_ip }}"
+  with_items: "{{ public_subnets }}"
+  register: port_results
+
+- name: Extract port IDs and set fact
+  set_fact: port_list={{ item.port.id }}
+  with_items: "{{ port_results.results }}"
+  register: port_list_result
+
+- name: Set fact for port IDs list
+  set_fact: port_list_fact={{ port_list_result.results | map(attribute='ansible_facts.port_list') | list }}
+
+# NOTE:
+# Interfaces from the public subnets connected to this router must
+# be added by port. However, the os_router Ansible modules does not
+# support adding interfaces to routers using ports. Therefore this
+# operation is done using the neutron CLI.
 - name: Create Internal Router
   os_router:
     name: internal_router
     state: present
-    network: "{{ transient_network_name }}"
-    interfaces: "{{ interfaces }}"
+    network: "{{ direct_network.name }}"
+    external_fixed_ips:
+      - subnet: "{{ direct_network.subnet_name }}"
+        ip: "{{ direct_network.internal_router_ip }}"
+
+- name: Add interfaces from public subnets to the internal router
+  shell: "neutron router-interface-add internal_router port={{ item }} || true"
+  register: neutron_router_interface_add_output
+  with_items: "{{ port_list_fact }}"
+
+- name: Create port for no mans net to attach to internal router
+  os_port:
+    state: present
+    name: "{{ no_mans_net.subnet_name }}_port"
+    network: "{{ no_mans_net.net_name }}"
+    fixed_ips:
+      - ip_address: "{{ no_mans_net.internal_router_gateway_ip }}"
+  register: no_mans_port_results
+
+- name: Add interface from no mans net to internal router
+  shell: "neutron router-interface-add internal_router port={{ no_mans_port_results.id }} || true"

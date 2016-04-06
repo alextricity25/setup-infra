@@ -1,5 +1,17 @@
 external_network_name: "ext-net"
-transient_network_name: "direct-net"
+direct_network_name: "direct-net"
+
+
+external_network:
+  name: "ext-net"
+  subnet_name: "ext-subnet"
+  internet_router_ip: "172.29.248.12"
+
+direct_network:
+  name: "direct-net"
+  subnet_name: "direct-subnet"
+  internal_router_ip: "10.163.36.136"
+  
 
 dns_servers:
   - "8.8.8.8"
@@ -7,12 +19,15 @@ dns_servers:
 
 # The network used to route traffic from the internal router to the internet router
 no_mans_net:
-  - { net_name: "no-mans-net", subnet_name: "no-mans-subnet", cidr: "192.168.254.0/29" }
+  net_name: "no-mans-net"
+  subnet_name: "no-mans-subnet"
+  cidr: "192.168.254.0/29"
+  internal_router_gateway_ip: "192.168.254.2"
 
 public_subnets:
-  - { net_name: "az1-pub-net", subnet_name: "az1-pub-subnetcidr", cidr: "10.169.0.0/23", internal_router_gateway_ip: "10.169.0.1", internet_router_gateway_ip: "10.169.0.254", allocation_pool_start: "10.169.0.2", allocation_pool_end: "10.169.0.253" }
-  - { net_name: "az2-pub-net", subnet_name: "az2-pub-subnetcidr", cidr: "10.169.2.0/23", internal_router_gateway_ip: "10.169.2.1", internet_router_gateway_ip: "10.169.2.254", allocation_pool_start: "10.169.2.2", allocation_pool_end: "10.169.2.253" }
-  - { net_name: "az3-pub-net", subnet_name: "az3-pub-subnetcidr", cidr: "10.169.4.0/23", internal_router_gateway_ip: "10.169.4.1", internet_router_gateway_ip: "10.169.4.254", allocation_pool_start: "10.169.4.2", allocation_pool_end: "10.169.4.253" }
+  - { net_name: "az1-pub-net", subnet_name: "az1-pub-subnetcidr", cidr: "10.169.0.0/23", internet_router_gateway_ip: "10.169.0.1", internal_router_gateway_ip: "10.169.0.254", allocation_pool_start: "10.169.0.2", allocation_pool_end: "10.169.0.253" }
+  - { net_name: "az2-pub-net", subnet_name: "az2-pub-subnetcidr", cidr: "10.169.2.0/23", internet_router_gateway_ip: "10.169.2.1", internal_router_gateway_ip: "10.169.2.254", allocation_pool_start: "10.169.2.2", allocation_pool_end: "10.169.2.253" }
+  - { net_name: "az3-pub-net", subnet_name: "az3-pub-subnetcidr", cidr: "10.169.4.0/23", internet_router_gateway_ip: "10.169.4.1", internal_router_gateway_ip: "10.169.4.254", allocation_pool_start: "10.169.4.2", allocation_pool_end: "10.169.4.253" }
 
 private_subnets:
   - { net_name: "az1-priv-net", subnet_name: "az1-priv-subnetcidr", cidr: "10.169.8.0/23" }
