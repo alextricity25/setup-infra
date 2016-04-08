@@ -11,7 +11,11 @@
 #- name: Debug interfaces list
 #  debug: var=interfaces
 
+- name: Clear routes from internet router
+  shell: "neutron router-update internet_router --no-routes || true"
 
+- name: Clear routes from internal router
+  shell: "neutron router-update internal_router --no-routes || true"
 
 - name: Delete internal router interfaces
   shell: "neutron router-interface-delete internal_router port={{ item.subnet_name }}_port || true"

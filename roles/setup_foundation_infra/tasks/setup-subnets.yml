@@ -3,7 +3,7 @@
   os_network:
     state: present
     name: "{{ item.net_name }}"
-    external: true
+    external: false
   with_items: "{{ public_subnets }}"
 
 - name: Create public subnets
@@ -38,4 +38,19 @@
     cidr: "{{ no_mans_net.cidr }}"
     enable_dhcp: false
     
-  
+- name: Create private networks
+  os_network:
+    state: present
+    name: "{{ item.net_name }}"
+    external: false
+  with_items: "{{ private_subnets }}"
+
+- name: Create private subnets
+  os_subnet:
+    state: present
+    network_name: "{{ item.net_name }}"
+    name: "{{ item.subnet_name }}"
+    cidr: "{{ item.cidr }}"
+    dns_nameservers: "{{ dns_servers }}"
+    gateway_ip: "{{ item.internal_router_gateway_ip }}"
+  with_items: "{{ private_subnets }}"
