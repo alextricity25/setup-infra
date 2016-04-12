@@ -28,7 +28,6 @@
         ip: "{{ external_network.internet_router_ip }}"
     interfaces: "{{ interfaces + no_mans_net_list }}"
 
-
 # NOTE:
 # Interfaces from the public subnets connected to this router must
 # be added by port. However, the os_router Ansible modules does not
@@ -57,6 +56,8 @@
   with_items: "{{ public_subnets }}"
   register: port_results
 
+# Here, a fact is being created to list out the IDs of all of the public
+# subnet ports to be attached to the router.
 - name: Extract port IDs and set fact
   set_fact: port_list={{ item.port.id }}
   with_items: "{{ port_results.results }}"
@@ -65,8 +66,9 @@
 - name: Set fact for port IDs list
   set_fact: port_list_fact={{ port_list_result.results | map(attribute='ansible_facts.port_list') | list }}
 
+# Adding the interface to the internal_router router by port.
 - name: Add interfaces from public subnets to the internal router
-  shell: "neutron router-interface-add internal_router port={{ item }} || true"
+  shell: "neutron router-interface-add internal_router port={{ item }}"
   register: neutron_router_interface_add_output
   with_items: "{{ port_list_fact }}"
 
@@ -84,3 +86,6 @@
 
 - name: Update static routes on internet router
   shell: "neutron router-update {{ internet_router_routes }} internet_router"
+
+- name: Update static routes on internal router
+  shell: "neutron router-update {{ internal_router_routes }} internal_router"
